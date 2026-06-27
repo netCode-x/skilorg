@@ -6,11 +6,10 @@ import BlogPost from '@/components/BlogPost/BlogPost';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer/Footer';
 import LoginModal from '@/components/LoginModal/LoginModal';
-
 import styles from '@/App.module.scss';
 import Dashboard from "@/Dashboard/Dashboard.tsx";
 
-// 模拟数据
+// 模拟博客文章数据（用于未登录时的首页）
 const mockPosts = [
     {
         id: 1,
@@ -40,15 +39,16 @@ const AppContent: React.FC = () => {
 
     return (
         <div className={styles.appContainer}>
-            <Header onAvatarClick={() => setIsModalOpen(true)} />
+            {/* 未登录时显示 Header，登录后隐藏 */}
+            {!isLoggedIn && <Header onAvatarClick={() => setIsModalOpen(true)} />}
 
+            {/* 未登录时的 Banner 和导航 */}
             {!isLoggedIn && (
                 <>
                     <div className={styles.banner}>
                         <span>💛 Na osobistych blogach można znaleźć wiele artykułów technicznych!</span>
                         <span className={styles.arrow}>→</span>
                     </div>
-
                     <nav className={styles.subNav}>
                         <a href="#" className={styles.active}>所有部落格</a>
                         <a href="#">搭建你的網站</a>
@@ -72,6 +72,7 @@ const AppContent: React.FC = () => {
                             <Sidebar />
                         </div>
                     ) : (
+                        // 登录后直接渲染 Dashboard（自带完整布局）
                         <Dashboard user={user!} />
                     )}
                 </div>

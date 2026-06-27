@@ -1,61 +1,247 @@
 // src/components/Dashboard/Dashboard.module.scss
-.dashboard {
-  width: 100%;
-  padding: 20px 0;
-  animation: fadeSlide 0.5s ease;
-}
-
-.welcomeCard {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 40px 36px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
-  h1 {
-    font-size: 28px;
-    color: #333;
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
-
-  p {
-    color: #666;
-    font-size: 16px;
-    margin: 0 0 24px 0;
-  }
-}
-
-.stats {
+.dashboardLayout {
   display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
+  min-height: 70vh;
+  background: #f5f7fa;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.statItem {
+/* ---------- 左侧菜单 ---------- */
+.sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e8ecf0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  flex-shrink: 0;
+  padding: 20px 0 16px 0;
+}
 
-  .number {
-    font-size: 32px;
+.logoArea {
+  padding: 0 20px 20px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  .logo {
+    font-size: 20px;
     font-weight: 700;
+    color: #6a1b9a;
+    letter-spacing: 1px;
+  }
+}
+
+.menu {
+  flex: 1;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuItem {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: #f5f0fa;
     color: #6a1b9a;
   }
 
-  span:last-child {
+  &.active {
+    background: #f0e6f6;
+    color: #6a1b9a;
+    border-left-color: #6a1b9a;
+    font-weight: 600;
+  }
+}
+
+.userInfo {
+  padding: 16px 20px 0 20px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  .username {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+  .logoutBtn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+      background: #f5f5f5;
+      color: #333;
+      border-color: #bbb;
+    }
+  }
+}
+
+/* ---------- 右侧内容 ---------- */
+.contentArea {
+  flex: 1;
+  padding: 24px 30px 30px 30px;
+  background: #ffffff;
+}
+
+.contentHeader {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+}
+
+.contentBody {
+  // 各模块内容
+}
+
+/* ---------- 模块通用样式 ---------- */
+.module {
+  animation: fadeSlide 0.3s ease;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.statCard {
+  background: #f8f9fc;
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: center;
+  span {
+    display: block;
     font-size: 14px;
     color: #888;
-    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+  b {
+    font-size: 28px;
+    color: #6a1b9a;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  th {
+    background: #fafafa;
+    font-weight: 600;
+    color: #555;
+  }
+  button {
+    margin-right: 6px;
+    padding: 4px 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
+    &:hover {
+      background: #f0f0f0;
+    }
+    &:last-child {
+      color: #d32f2f;
+      border-color: #f5c6cb;
+      &:hover {
+        background: #fde8e8;
+      }
+    }
+  }
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    font-size: 14px;
+    span {
+      color: #888;
+      font-size: 13px;
+    }
+    button {
+      padding: 2px 12px;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      &:hover {
+        background: #f0f0f0;
+      }
+    }
+  }
+}
+
+.settingGroup {
+  margin-bottom: 20px;
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  input, textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    &:focus {
+      outline: none;
+      border-color: #6a1b9a;
+    }
+  }
+}
+
+.saveBtn {
+  padding: 8px 24px;
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  &:hover {
+    background: #4a148c;
   }
 }
 
 @keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
