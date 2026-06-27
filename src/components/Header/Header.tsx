@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '@/components/Header/Header.module.scss';
+import LoginModal from '@/components/LoginModal/LoginModal';
 
 const Header: React.FC = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <header className={styles.header}>
             <a href="#" className={styles.logo}>
@@ -32,14 +35,21 @@ const Header: React.FC = () => {
                     </button>
                 </div>
 
-                {/* 用户头像按钮（登录/账号） */}
-                <button className={styles.avatarButton} aria-label="用户账号">
+                {/* 用户头像按钮 -> 点击打开弹窗 */}
+                <button
+                    className={styles.avatarButton}
+                    aria-label="用户账号"
+                    onClick={() => setIsModalOpen(true)}
+                >
                     <svg viewBox="0 0 24 24" width="28" height="28">
                         <circle cx="12" cy="8" r="4" fill="currentColor"/>
                         <path d="M12 13c-4.42 0-8 2.69-8 6v1h16v-1c0-3.31-3.58-6-8-6z" fill="currentColor"/>
                     </svg>
                 </button>
             </div>
+
+            {/* 登录/注册弹窗 */}
+            <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </header>
     );
 };
