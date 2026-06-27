@@ -1,30 +1,46 @@
+// src/components/LoginModal/LoginModal.tsx
 import React, { useState } from 'react';
 import styles from '@/components/LoginModal/LoginModal.module.scss';
 
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onLoginSuccess: (userData: { username: string; email?: string }) => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState(''); // 显示错误信息
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
+
+        // 登录验证
         if (isLogin) {
-            // 登录：使用 username 和 password
-            console.log('登录', { username, password });
-            // 调用登录 API
+            // 硬编码验证：用户名 admin，密码 123456
+            if (username === 'admin' && password === '123456') {
+                onLoginSuccess({ username });
+            } else {
+                setError('用户名或密码错误（测试账号: admin / 123456）');
+            }
         } else {
-            // 注册：使用 username, email, password
-            console.log('注册', { username, email, password, confirmPassword });
-            // 调用注册 API
+            // 注册验证：简单检查非空
+            if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+                setError('所有字段均为必填');
+                return;
+            }
+            if (password !== confirmPassword) {
+                setError('两次输入的密码不一致');
+                return;
+            }
+            // 注册成功
+            onLoginSuccess({ username, email });
         }
-        onClose();
     };
 
     const switchMode = () => {
@@ -33,6 +49,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         setEmail('');
         setPassword('');
         setConfirmPassword('');
+        setError('');
     };
 
     if (!isOpen) return null;
@@ -45,7 +62,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 <h2 className={styles.title}>{isLogin ? '登录' : '注册'}</h2>
 
                 <form onSubmit={handleSubmit}>
-                    {/* 用户名：登录和注册都显示 */}
                     <div className={styles.field}>
                         <label htmlFor="username">用户名</label>
                         <input
@@ -58,7 +74,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    {/* 邮箱：仅注册时显示 */}
                     {!isLogin && (
                         <div className={styles.field}>
                             <label htmlFor="email">邮箱</label>
@@ -73,7 +88,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     )}
 
-                    {/* 密码：登录和注册都显示 */}
                     <div className={styles.field}>
                         <label htmlFor="password">密码</label>
                         <input
@@ -86,7 +100,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    {/* 确认密码：仅注册时显示 */}
                     {!isLogin && (
                         <div className={styles.field}>
                             <label htmlFor="confirmPassword">确认密码</label>
@@ -100,6 +113,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             />
                         </div>
                     )}
+
+                    {error && <div className={styles.error}>{error}</div>}
 
                     <button type="submit" className={styles.submitButton}>
                         {isLogin ? '登录' : '注册'}

@@ -1,3 +1,4 @@
+// src/components/LoginModal/LoginModal.module.scss
 .overlay {
   position: fixed;
   top: 0;
@@ -11,7 +12,12 @@
   z-index: 1000;
   animation: fadeIn 0.2s ease;
 }
-
+.error {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: center;
+}
 .modal {
   background-color: #ffffff;
   border-radius: 12px;

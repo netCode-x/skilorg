@@ -1,3 +1,4 @@
+// src/components/Header/Header.module.scss
 .header {
   display: flex;
   align-items: center;
@@ -35,14 +36,12 @@
     }
   }
 
-  // 右侧区域（搜索 + 头像）
   .rightSection {
     display: flex;
     align-items: center;
     gap: 16px;
   }
 
-  // 搜索框容器
   .searchWrapper {
     display: flex;
     align-items: center;
@@ -91,7 +90,18 @@
     }
   }
 
-  // 用户头像按钮
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .username {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+
   .avatarButton {
     background: none;
     border: none;
