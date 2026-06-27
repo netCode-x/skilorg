@@ -1,14 +1,43 @@
 // src/components/Header/Header.tsx
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import styles from '@/components/Header/Header.module.scss';
 
 interface HeaderProps {
     onAvatarClick: () => void;
+    onNavigateDashboard: () => void;
+    onNavigateProfile: () => void;
+    onNavigateSettings: () => void;
+    onLogout: () => void; // 由外部提供，但我们可以直接在内部用useAuth logout
 }
 
-const Header: React.FC<HeaderProps> = ({ onAvatarClick }) => {
-    const { user, isLoggedIn, logout } = useAuth();
+const Header: React.FC<HeaderProps> = ({
+                                           onAvatarClick,
+                                           onNavigateDashboard,
+                                           onNavigateProfile,
+                                           onNavigateSettings,
+                                           onLogout,
+                                       }) => {
+    const { user, isLoggedIn } = useAuth();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const toggleDropdown = () => setDropdownOpen(prev => !prev);
+
+    const handleItemClick = (callback: () => void) => {
+        setDropdownOpen(false);
+        callback();
+    };
 
     return (
         <header className={styles.header}>
@@ -40,14 +69,26 @@ const Header: React.FC<HeaderProps> = ({ onAvatarClick }) => {
                 </div>
 
                 {isLoggedIn ? (
-                    <div className={styles.userInfo}>
-                        <span className={styles.username}>{user?.username}</span>
-                        <button className={styles.avatarButton} onClick={logout} aria-label="退出登录">
-                            <svg viewBox="0 0 24 24" width="28" height="28">
-                                <circle cx="12" cy="8" r="4" fill="currentColor"/>
-                                <path d="M12 13c-4.42 0-8 2.69-8 6v1h16v-1c0-3.31-3.58-6-8-6z" fill="currentColor"/>
-                            </svg>
-                        </button>
+                    <div className={styles.userMenu} ref={dropdownRef}>
+                        <div className={styles.userTrigger} onClick={toggleDropdown}>
+                            <span className={styles.username}>{user?.username}</span>
+                            <span className={styles.arrowDown}>▼</span>
+                            <div className={styles.avatarIcon}>
+                                <svg viewBox="0 0 24 24" width="28" height="28">
+                                    <circle cx="12" cy="8" r="4" fill="currentColor"/>
+                                    <path d="M12 13c-4.42 0-8 2.69-8 6v1h16v-1c0-3.31-3.58-6-8-6z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                        </div>
+                        {dropdownOpen && (
+                            <ul className={styles.dropdownMenu}>
+                                <li onClick={() => handleItemClick(onNavigateDashboard)}>📊 仪表盘</li>
+                                <li onClick={() => handleItemClick(onNavigateProfile)}>👤 个人资料</li>
+                                <li onClick={() => handleItemClick(onNavigateSettings)}>⚙️ 系统设置</li>
+                                <li className={styles.divider}></li>
+                                <li onClick={() => handleItemClick(onLogout)}>🚪 登出</li>
+                            </ul>
+                        )}
                     </div>
                 ) : (
                     <button className={styles.avatarButton} onClick={onAvatarClick} aria-label="登录">

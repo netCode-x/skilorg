@@ -1,15 +1,15 @@
 // src/App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header/Header';
 import BlogPost from '@/components/BlogPost/BlogPost';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer/Footer';
 import LoginModal from '@/components/LoginModal/LoginModal';
-import styles from '@/App.module.scss';
-import Dashboard from "@/Dashboard/Dashboard.tsx";
+import Dashboard from '@/Dashboard/Dashboard';
+import styles from './App.module.scss';
 
-// 模拟博客文章数据（用于未登录时的首页）
+// 模拟博客文章数据
 const mockPosts = [
     {
         id: 1,
@@ -30,20 +30,55 @@ const mockPosts = [
 ];
 
 const AppContent: React.FC = () => {
-    const { isLoggedIn, user, login } = useAuth();
+    const { isLoggedIn, user, login, logout } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [viewMode, setViewMode] = useState<'home' | 'dashboard'>('home');
+    const [dashboardMenu, setDashboardMenu] = useState<string>('dashboard');
+
+    // 登录后自动进入仪表盘
+    useEffect(() => {
+        if (isLoggedIn) {
+            setViewMode('dashboard');
+            setDashboardMenu('dashboard');
+        } else {
+            setViewMode('home');
+        }
+    }, [isLoggedIn]);
 
     const handleLoginSuccess = (userData: { username: string; email?: string }) => {
         login(userData);
     };
 
+    const handleBackHome = () => {
+        setViewMode('home');
+    };
+
+    const navigateToDashboard = (menu: string) => {
+        setViewMode('dashboard');
+        setDashboardMenu(menu);
+    };
+
+    // 退出登录
+    const handleLogout = () => {
+        logout();
+        setViewMode('home');
+    };
+
+    const isHome = viewMode === 'home';
+
     return (
         <div className={styles.appContainer}>
-            {/* 未登录时显示 Header，登录后隐藏 */}
-            {!isLoggedIn && <Header onAvatarClick={() => setIsModalOpen(true)} />}
+            {isHome && (
+                <Header
+                    onAvatarClick={() => setIsModalOpen(true)}
+                    onNavigateDashboard={() => navigateToDashboard('dashboard')}
+                    onNavigateProfile={() => navigateToDashboard('profile')}
+                    onNavigateSettings={() => navigateToDashboard('settings')}
+                    onLogout={handleLogout}
+                />
+            )}
 
-            {/* 未登录时的 Banner 和导航 */}
-            {!isLoggedIn && (
+            {isHome && (
                 <>
                     <div className={styles.banner}>
                         <span>💛 Na osobistych blogach można znaleźć wiele artykułów technicznych!</span>
@@ -62,7 +97,14 @@ const AppContent: React.FC = () => {
 
             <main className={styles.mainContent}>
                 <div className={styles.viewContainer}>
-                    {!isLoggedIn ? (
+                    {viewMode === 'dashboard' ? (
+                        <Dashboard
+                            user={user!}
+                            onBackHome={handleBackHome}
+                            activeMenu={dashboardMenu}
+                            onMenuChange={setDashboardMenu}
+                        />
+                    ) : (
                         <div className={styles.blogView}>
                             <div className={styles.feed}>
                                 {mockPosts.map(post => (
@@ -71,14 +113,11 @@ const AppContent: React.FC = () => {
                             </div>
                             <Sidebar />
                         </div>
-                    ) : (
-                        // 登录后直接渲染 Dashboard（自带完整布局）
-                        <Dashboard user={user!} />
                     )}
                 </div>
             </main>
 
-            <Footer />
+            {isHome && <Footer />}
 
             <LoginModal
                 isOpen={isModalOpen}
