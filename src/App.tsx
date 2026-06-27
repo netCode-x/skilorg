@@ -5,6 +5,7 @@ import BlogPost from './components/BlogPost/BlogPost';
 import Sidebar from './components/Sidebar/Sidebar';
 import styles from './App.module.scss';
 import Footer from "@/components/Footer/Footer.tsx";
+import ScrollController from "@/components/ScrollController/ScrollController.tsx";
 
 // 模拟数据
 const mockPosts = [
@@ -29,10 +30,10 @@ const mockPosts = [
 const App: React.FC = () => {
     return (
         <div className={styles.appContainer}>
-            <Header />
+            <Header/>
 
             <div className={styles.banner}>
-                <span>💛 Zarejestruj się i zbuduj niesamowitą stronę w kilka minut!</span>
+                <span>💛 Na osobistych blogach można znaleźć wiele artykułów technicznych!</span>
                 <span className={styles.arrow}>→</span>
             </div>
 
@@ -55,9 +56,11 @@ const App: React.FC = () => {
                     ))}
                 </div>
 
-                <Sidebar />
+                <Sidebar/>
             </main>
-            <Footer />
+            <ScrollController/>
+            <Footer/>
+
         </div>
     );
 };

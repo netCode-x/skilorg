@@ -11,15 +11,15 @@ const Header: React.FC = () => {
 
             <nav className={styles.nav}>
                 <a href="#">Home</a>
-                <a href="#">Szablony</a>
+                <a href="#">Tools</a>
                 <a href="#">Ceny</a>
                 <a href="#">Sprzedawca</a>
                 <a href="#">Wsparcie</a>
-                <a href="#">Blog</a>
+                <a href="#">airspace</a>
             </nav>
 
             <button className={styles.ctaButton}>
-                Utwórz Swoją Darmową Stronę Internetową
+                This is a private tech blog website
             </button>
         </header>
     );
