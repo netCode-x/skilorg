@@ -1,6 +1,6 @@
 // BlogPost.tsx
 import React from 'react';
-import styles from './BlogPost.module.scss';
+import styles from '@/components/BlogPost/BlogPost.module.scss';
 
 interface BlogPostProps {
     title: string;

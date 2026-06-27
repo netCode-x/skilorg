@@ -1,7 +1,7 @@
 // Footer.tsx
 
 import React from 'react';
-import styles from './Footer.module.scss';
+import styles from '@/components/Footer/Footer.module.scss';
 
 // 定义链接数据的类型
 interface LinkItem {

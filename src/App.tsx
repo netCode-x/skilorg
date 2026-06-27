@@ -1,11 +1,12 @@
 // App.tsx
 import React from 'react';
-import Header from './components/Header/Header';
-import BlogPost from './components/BlogPost/BlogPost';
-import Sidebar from './components/Sidebar/Sidebar';
-import styles from './App.module.scss';
+
+import styles from '@/App.module.scss';
 import Footer from "@/components/Footer/Footer.tsx";
 import ScrollController from "@/components/ScrollController/ScrollController.tsx";
+import Header from "@/components/Header/Header.tsx";
+import BlogPost from "@/components/BlogPost/BlogPost.tsx";
+import Sidebar from "@/components/Sidebar/Sidebar.tsx";
 
 // 模拟数据
 const mockPosts = [

@@ -1,12 +1,12 @@
 // Header.tsx
 import React from 'react';
-import styles from './Header.module.scss';
+import styles from '@/components/Header/Header.module.scss';
 
 const Header: React.FC = () => {
     return (
         <header className={styles.header}>
             <a href="#" className={styles.logo}>
-                THE <span>strikngly</span> BLOG
+                Personal <span>technical</span> BLOG
             </a>
 
             <nav className={styles.nav}>
