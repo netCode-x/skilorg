@@ -1,6 +1,6 @@
 // src/App.tsx
-import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import React, {useState, useEffect} from 'react';
+import {AuthProvider, useAuth} from '@/context/AuthContext';
 import Header from '@/components/Header/Header';
 import BlogPost from '@/components/BlogPost/BlogPost';
 import Sidebar from '@/components/Sidebar/Sidebar';
@@ -8,6 +8,7 @@ import Footer from '@/components/Footer/Footer';
 import LoginModal from '@/components/LoginModal/LoginModal';
 import Dashboard from '@/Dashboard/Dashboard';
 import styles from './App.module.scss';
+import ScrollController from "@/components/ScrollController/ScrollController.tsx";
 
 // 模拟博客文章数据
 const mockPosts = [
@@ -30,7 +31,7 @@ const mockPosts = [
 ];
 
 const AppContent: React.FC = () => {
-    const { isLoggedIn, user, login, logout } = useAuth();
+    const {isLoggedIn, user, login, logout} = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [viewMode, setViewMode] = useState<'home' | 'dashboard'>('home');
     const [dashboardMenu, setDashboardMenu] = useState<string>('dashboard');
@@ -111,14 +112,14 @@ const AppContent: React.FC = () => {
                                     <BlogPost key={post.id} {...post} />
                                 ))}
                             </div>
-                            <Sidebar />
+                            <Sidebar/>
                         </div>
                     )}
                 </div>
             </main>
 
-            {isHome && <Footer />}
-
+            {isHome && <Footer/>}
+            <ScrollController/>
             <LoginModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -130,7 +131,7 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => (
     <AuthProvider>
-        <AppContent />
+        <AppContent/>
     </AuthProvider>
 );
 

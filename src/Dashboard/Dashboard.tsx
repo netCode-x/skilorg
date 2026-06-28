@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import styles from './Dashboard.module.scss';
+import styles from '@/Dashboard/Dashboard.module.scss';
 
 interface DashboardProps {
     user: { username: string; email?: string };

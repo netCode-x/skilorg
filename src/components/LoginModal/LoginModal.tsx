@@ -1,6 +1,9 @@
 // src/components/LoginModal/LoginModal.tsx
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styles from '@/components/LoginModal/LoginModal.module.scss';
+import {LoginServiceReq} from "@/service/LoginService.tsx";
+import type {LoginTypeResq} from "@/service/serviceType/LoginType.d..ts";
+import {message} from "antd";
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -8,25 +11,34 @@ interface LoginModalProps {
     onLoginSuccess: (userData: { username: string; email?: string }) => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+const LoginModal: React.FC<LoginModalProps> = ({isOpen, onClose, onLoginSuccess}) => {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(''); // 显示错误信息
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-
-        // 登录验证
         if (isLogin) {
-            // 硬编码验证：用户名 admin，密码 123456
-            if (username === 'admin' && password === '123456') {
-                onLoginSuccess({ username });
-            } else {
-                setError('用户名或密码错误（测试账号: admin / 123456）');
+            try {
+                const reqData: LoginTypeResq = {
+                    username: username.trim(),
+                    password: password.trim()
+                }
+              const  respLogin= await LoginServiceReq(reqData);
+                if (respLogin.success){
+                    message.success("登录成功")
+                    onLoginSuccess({username});
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                }
+            } catch (error: unknown) {
+                message.error("登录失败: " + error);
+                setError('用户名或密码错误');
             }
         } else {
             // 注册验证：简单检查非空
@@ -39,7 +51,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 return;
             }
             // 注册成功
-            onLoginSuccess({ username, email });
+            onLoginSuccess({username, email});
         }
     };
 
