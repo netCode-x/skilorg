@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import styles from '@/Dashboard/Dashboard.module.scss';
 
 interface DashboardProps {
@@ -30,10 +31,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                                              }) => {
     const { logout } = useAuth();
 
-    // 自定义退出登录：清除状态并返回首页
     const handleLogout = () => {
         logout();
-        onBackHome(); // 切换到首页（博客列表）
+        onBackHome();
     };
 
     const renderContent = () => {
@@ -108,7 +108,7 @@ const DashboardOverview: React.FC<{ user: { username: string } }> = ({ user }) =
     </div>
 );
 
-/* ===== 文章管理（列表 + 编辑器，带 Markdown 预览） ===== */
+/* ===== 文章管理 ===== */
 const ArticleManagement: React.FC = () => {
     const [articles, setArticles] = useState([
         { id: 1, title: '从Agent到具身智能', category: '人工智能', status: '已发布', content: '## 引言\n具身智能是...' },
@@ -118,15 +118,22 @@ const ArticleManagement: React.FC = () => {
 
     const [view, setView] = useState<'list' | 'editor'>('list');
     const [editingArticle, setEditingArticle] = useState<{ id?: number; title: string; category: string; status: string; content: string } | null>(null);
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
+
+    // 详情弹窗状态
+    const [detailModalOpen, setDetailModalOpen] = useState(false);
+    const [detailArticle, setDetailArticle] = useState<typeof articles[0] | null>(null);
 
     const handleAdd = () => {
         setEditingArticle({ title: '', category: '', status: '草稿', content: '' });
         setView('editor');
+        setIsPreviewMode(false);
     };
 
     const handleEdit = (article: typeof articles[0]) => {
         setEditingArticle({ ...article });
         setView('editor');
+        setIsPreviewMode(false);
     };
 
     const handleSave = (publish: boolean) => {
@@ -158,6 +165,19 @@ const ArticleManagement: React.FC = () => {
         }
     };
 
+    const togglePreview = () => setIsPreviewMode(prev => !prev);
+
+    // 详情弹窗控制
+    const handleShowDetail = (article: typeof articles[0]) => {
+        setDetailArticle(article);
+        setDetailModalOpen(true);
+    };
+
+    const handleCloseDetail = () => {
+        setDetailModalOpen(false);
+        setDetailArticle(null);
+    };
+
     if (view === 'list') {
         return (
             <div className={styles.module}>
@@ -178,6 +198,7 @@ const ArticleManagement: React.FC = () => {
                             <td>{article.category}</td>
                             <td><span className={article.status === '已发布' ? styles.published : styles.draft}>{article.status}</span></td>
                             <td>
+                                <button onClick={() => handleShowDetail(article)}>详情</button>
                                 <button onClick={() => handleEdit(article)}>编辑</button>
                                 <button onClick={() => handleDelete(article.id)}>删除</button>
                             </td>
@@ -185,6 +206,45 @@ const ArticleManagement: React.FC = () => {
                     ))}
                     </tbody>
                 </table>
+
+                {/* 详情弹窗 */}
+                {detailModalOpen && detailArticle && (
+                    <div className={styles.detailOverlay} onClick={handleCloseDetail}>
+                        <div className={styles.detailModal} onClick={(e) => e.stopPropagation()}>
+                            <div className={styles.detailHeader}>
+                                <h3>📄 文章详情</h3>
+                                <button className={styles.detailCloseBtn} onClick={handleCloseDetail}>×</button>
+                            </div>
+                            <div className={styles.detailBody}>
+                                <div className={styles.detailRow}>
+                                    <span className={styles.detailLabel}>标题</span>
+                                    <span className={styles.detailValue}>{detailArticle.title}</span>
+                                </div>
+                                <div className={styles.detailRow}>
+                                    <span className={styles.detailLabel}>分类</span>
+                                    <span className={styles.detailValue}>{detailArticle.category}</span>
+                                </div>
+                                <div className={styles.detailRow}>
+                                    <span className={styles.detailLabel}>状态</span>
+                                    <span className={`${styles.detailValue} ${detailArticle.status === '已发布' ? styles.published : styles.draft}`}>
+                                        {detailArticle.status}
+                                    </span>
+                                </div>
+                                <div className={styles.detailRow}>
+                                    <span className={styles.detailLabel}>内容</span>
+                                    <div className={styles.detailContentPreview}>
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            rehypePlugins={[rehypeRaw]}
+                                        >
+                                            {detailArticle.content || '（空内容）'}
+                                        </ReactMarkdown>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
@@ -193,7 +253,12 @@ const ArticleManagement: React.FC = () => {
         <div className={styles.editorContainer}>
             <div className={styles.editorHeader}>
                 <h3>{editingArticle?.id ? '编辑文章' : '新增文章'}</h3>
-                <button className={styles.cancelBtn} onClick={handleCancel}>返回列表</button>
+                <div className={styles.headerActions}>
+                    <button className={styles.previewToggleBtn} onClick={togglePreview}>
+                        {isPreviewMode ? '✏️ 编辑' : '👁️ 预览'}
+                    </button>
+                    <button className={styles.cancelBtn} onClick={handleCancel}>返回列表</button>
+                </div>
             </div>
 
             <div className={styles.editorForm}>
@@ -226,24 +291,27 @@ const ArticleManagement: React.FC = () => {
                     </div>
                 </div>
 
-                <div className={styles.editorSplit}>
-                    <div className={styles.editorPane}>
-                        <label>内容（Markdown）</label>
-                        <textarea
-                            className={styles.markdownEditor}
-                            value={editingArticle?.content || ''}
-                            onChange={e => setEditingArticle(prev => prev ? { ...prev, content: e.target.value } : null)}
-                            rows={15}
-                            placeholder="在此编写 Markdown 内容..."
-                        />
-                    </div>
-                    <div className={styles.previewPane}>
-                        <label>预览</label>
-                        <div className={styles.markdownPreview}>
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {editingArticle?.content || '（空内容）'}
-                            </ReactMarkdown>
-                        </div>
+                <div className={styles.contentAreaWrapper}>
+                    <label>内容（Markdown）</label>
+                    <div className={styles.contentBox}>
+                        {isPreviewMode ? (
+                            <div className={styles.previewContent}>
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeRaw]}
+                                >
+                                    {editingArticle?.content || '（空内容）'}
+                                </ReactMarkdown>
+                            </div>
+                        ) : (
+                            <textarea
+                                className={styles.markdownEditor}
+                                value={editingArticle?.content || ''}
+                                onChange={e => setEditingArticle(prev => prev ? { ...prev, content: e.target.value } : null)}
+                                rows={15}
+                                placeholder="在此编写 Markdown 内容..."
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -256,7 +324,7 @@ const ArticleManagement: React.FC = () => {
     );
 };
 
-/* ----- 其他模块 ----- */
+/* ----- 其他模块（保持不变） ----- */
 const UserManagement: React.FC = () => (
     <div className={styles.module}>
         <table className={styles.table}>
