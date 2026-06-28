@@ -4,7 +4,7 @@ import type {
     LoginTypeResq,
     RegisterTypeResp,
     RegisterTypeResq
-} from "@/service/serviceType/LoginType.d..ts";
+} from "@/service/ApiType.d..ts";
 import {message} from "antd";
 
 

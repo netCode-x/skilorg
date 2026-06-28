@@ -2,7 +2,7 @@
 import React, {useState} from 'react';
 import styles from '@/components/LoginModal/LoginModal.module.scss';
 import {LoginServiceReq, RegisterServiceReq} from "@/service/LoginService.tsx";
-import type {LoginTypeResq, RegisterTypeResq} from "@/service/serviceType/LoginType.d..ts";
+import type {LoginTypeResq, RegisterTypeResq} from "@/service/ApiType.d..ts";
 import {message} from "antd";
 
 interface LoginModalProps {
