@@ -24,8 +24,11 @@ fi
 echo "→ 拉取最新代码 (git pull origin main) ..."
 git pull origin main
 
+# ----- 关键修改：构建时传入 npm 镜像源 -----
 echo "→ 构建 Docker 镜像 (tag: skillorg:latest) ..."
-docker build -t skillorg:latest .
+docker build \
+  --build-arg NPM_REGISTRY=https://registry.npmmirror.com \
+  -t skillorg:latest .
 
 echo "→ 清理旧容器 ..."
 docker stop skillorg-container 2>/dev/null && echo "  - 已停止旧容器" || echo "  - 无旧容器需要停止"
